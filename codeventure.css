@@ -1,0 +1,187 @@
+body{
+	padding: 0px 30px 30px 30px;
+	font-family:'Courier New', Courier, monospace;
+	text-align: left;
+	color: black;
+	background: black;
+}
+
+/* ------------------------------------ text ------------------------------------ */
+h1 {
+    font-weight: bold;
+	color: brown;
+}
+
+pre{
+	white-space: pre-wrap;
+}
+
+/* ------------------------------------ lists ------------------------------------ */
+ul{
+	list-style-type: none;
+	padding: 0px;
+	margin-top: 0px;
+	margin-bottom: 10px;
+	border: ;
+}
+
+li:hover{
+	color: green;
+	font-weight: bold;
+}
+
+/* ------------------------------------ tables ------------------------------------ */
+table{
+	color: gray;
+}
+
+th{
+    text-align: center;
+	line-height: 10px;
+    font-weight: bold;
+}
+
+tr{
+    text-align: center;
+}
+
+td{
+}
+
+/* ------------------------------------ inputs ------------------------------------ */
+input {
+    clear: both;
+    padding-left: 5px;
+    background: none;
+	border: 1px solid gray;
+	font-family:'Courier New', Courier, monospace;
+}
+
+input:focus{
+	background: green;
+	color: white;
+	outline: 1px solid white;	
+}
+
+    input[type=text]{
+		min-width: 413px; 
+	}
+    
+	input[type=button]{
+		width: 20px;
+		height: 20px;
+		padding: 4px;
+		text-align: center;
+		line-height: 8px;
+		background: none;
+		color: white;
+	}
+        input[type=button]:hover{
+			background-color: green;
+		}
+
+textarea{
+	display: block;
+	background: none;
+	/* margin: 10px 10px 5px 0px; */
+	margin: 10px 0px 10px 0px;
+	padding-left: 5px;
+	border: 1px solid gray;
+	font-family:'Courier New', Courier, monospace;
+}
+
+textarea:focus{
+	background-color: green;
+	color: white;
+	border: 1px solid white;	
+}
+
+select{
+	background: none;
+	border: 1px solid gray;	
+	font-family:'Courier New', Courier, monospace;
+}
+
+	select:focus{
+		background: green;
+		color: white;
+		border: 1px solid white;
+	}
+
+/* ------------------------------------ classes ------------------------------------ */
+.wrapper{
+    position: relative;
+	padding: 20px;
+	margin-left: 35px;
+        border-top: 2px solid white;
+        border-right: 2px solid white;
+        border-bottom: ;
+        border-left: 2px solid white;
+	color: white;
+    width: 900px;
+    background-color: brown;
+}
+
+.form{
+	margin-top: 15px; 
+    padding: 10px;
+}
+
+.td_containing_select{
+}
+
+.select_in_td{
+}
+
+/* ------------------------------------ IDs ------------------------------------ */
+
+/* ------------------------------------ page section ------------------------------------ */
+#pagewrapper{
+	display: none;
+}
+
+#pageslist{
+    border: ;
+}
+
+#pageform{
+    display: none;
+}
+
+#confirmdelete{
+    display: none;
+}
+
+#startbook{
+    display: none;
+}
+
+#yesno{
+    display: none;
+}
+
+/* ------------------------------------ choices section ------------------------------------ */
+#choiceswrapper {
+	display: none;
+}
+
+#choicesform {
+}
+
+/* ------------------------------------ info section ------------------------------------ */
+#temptext{
+    display: none;
+	margin: 15px 0px 15px 15px;
+    width: 600px;
+    overflow: none;
+    background-color: tan;
+    color: brown;
+	border: 2px solid gray;
+}
+
+#bookinfowrapper{
+	display: none;
+    border-bottom: 2px solid white;
+}
+
+/* ------------------------------------ END OF LINE ------------------------------------ */

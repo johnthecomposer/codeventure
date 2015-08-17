@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+	<head>
+		<link rel="stylesheet" type="text/css" media="screen" href="/codeventure/codeventure.css"/>
+		<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/jcjs/jcjs_build.js"></script>
+		<script type="text/javascript" src="/jcjs/jcjs_events.js"></script>
+		<script type="text/javascript" src="/jcjs/jcjs_html.js"></script>
+		<script type="text/javascript" src="/jcjs/jcjs_info.js"></script>
+		<script type="text/javascript" src="/jcjs/jcjs_storage.js"></script>
+		<script type="text/javascript" src="/codeventure/codeventure.js"></script>
+		<script type="text/javascript" src="/codeventure/jc_bookmethods.js"></script>
+	</head>
+
+	<body>
+
+		<h1>Book Factory</h1>
+
+			<div id="pagewrapper" class="wrapper">
+				<pre class="info">testing</pre>
+				<div id="demo"></div>
+				<div id="bookliteral"></div>
+				<div id="startbook"></div>
+				<div id="yesno"></div>
+				
+					<div id="pageslist">
+					</div>
+
+					<input type="button" value="+" title="create a new page" class="incrementbutton" id="createpagebutton"/>
+					<input type='button' value='x' class='deletebutton' id='currentPage' title='delete the current page'/>
+					<div id="confirmdelete"></div>
+					<!-- <input type='button' value='r' id='renamepagebutton' title='rename this page'/> -->
+						
+					<div id="pageform" class="form">
+						<input type='text' id='title' placeholder="title"></input>
+						<textarea placeholder="narrative" rows="1" cols="57" style="height:1em;" id="narrative"></textarea>
+						<input type='text' id='image' placeholder="image"></input>
+					</div><!-- end pageform -->
+
+			</div><!-- end pagewrapper -->
+
+
+			<div id='choiceswrapper' class='wrapper'>
+    
+				<div id="choicesform" class="form">
+				</div><!-- end choicesform -->
+				<input type="button" value="+" title="add a choice to this page" class="incrementbutton" id="addchoice"/> 
+				
+			</div><!-- end choiceswrapper -->
+		
+
+			<div id="bookinfowrapper" class="wrapper">
+			
+					<input type='button' value='s' id='savepagebutton' title='save this page' />
+					<input type='button' value='i' id='bookinfobutton' class='bookinfobutton' title='show book information'/>
+							
+					<div id="temptext" class="wrapper">
+					</div><!-- end temptext -->
+			
+			</div><!-- end bookinfowrapper --> 
+	
+	</body>
+
+</html>
