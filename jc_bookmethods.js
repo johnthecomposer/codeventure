@@ -136,7 +136,6 @@
 				var thisevent = this[prp];
 				if(typeof thisevent !== 'function' && typeof thisevent !== 'object' && prp !== 'eventlog'){
 					if(!this.eventlog[prp]){
-						
 						this.eventlog[prp] = [];
 					}
 				var lastindex = this.eventlog[prp].length - 1;
