@@ -44,11 +44,12 @@
 			//call persistor?
 	}
 
-	Choice.prototype.charlimit = 100;
 	Choice.prototype.datatype = 'string';
+	Choice.prototype.charlimit = 300;
+	
 	Choice.prototype.setDescription = function(description){
 		var error = 'Error: ';
-		if(typeof description !== this.datatype || (!description.length <= this.charlimit)){
+		if(typeof description !== this.datatype || description.length > this.charlimit){
 				error += 'please enter a valid string of less than ' + this.charlimit + 'characters';				
 		}
 		else{
@@ -63,7 +64,6 @@
 	//destroyers
 	Choice.prototype.destroyMe = function(){
 		//find and delete all references to the object and the object itself
-		
 		//return 'deleted' + ' ' + this.description
 	}
 	
@@ -107,6 +107,7 @@
 
 //functions to extend prototypes	
 //listeners
+	
 
 	//add listeners to prototypes
 	var addListeners = function(){
@@ -134,20 +135,21 @@
 			for(prp in this){
 				var thisevent = this[prp];
 				if(typeof thisevent !== 'function' && typeof thisevent !== 'object' && prp !== 'eventlog'){
-
 					if(!this.eventlog[prp]){
+						
 						this.eventlog[prp] = [];
 					}
 				var lastindex = this.eventlog[prp].length - 1;
-				var lastevent = this.eventlog[prp][lastindex];
-				
-				this.eventlog[prp].push(thisevent);
+				var lastevent = this.eventlog[prp][lastindex];				
 				var changed = '';
-				changed += thisevent == lastevent ? 'no change' : 'changed ' + prp + ' from ' + lastevent + ' to ' + thisevent + '\n';
+				changed += thisevent == lastevent ? '' : 'changed ' + prp + ' from ' + lastevent + ' to ' + thisevent + '\n';
+					changed ? this.eventlog[prp].push(thisevent) : '';
 				}
 			}
 		alert(changed);
 	}
+
+
 
 
 //extend bookfactory prototypes
@@ -162,11 +164,16 @@
 	
 //calls
 	$(document).ready(function(){
-		
+
 		//create a book
 		var codeventure = new Book('Codeventure', 'John');
-		pshIt(codeventure, books);
+
 		codeventure.logevent();
+		codeventure.author = 'Johnz';
+		codeventure.logevent();
+		codeventure.author = 'Cody';		
+		codeventure.logevent();
+		pshIt(codeventure, books);
 
 		
 		//create pages
@@ -178,7 +185,7 @@
 		pshIt(themountains, pages);
 		pshIt(pages, books['Codeventure']);
 		pages.logevent = logevent;
-		pages.logevent();
+		//pages.logevent();
 		
 		//create choices
 		var theinn = new Choice('theinn', 'Go to the inn?');
@@ -187,7 +194,7 @@
 		pshIt(themountains, choices);
 		pshIt(choices, pages['home']);	
 		choices.logevent = logevent;
-		choices.logevent();
+		//choices.logevent();
 		
 
 		//pshIt(codeventure, books);
@@ -196,7 +203,8 @@
 		//books.logevent();
 		//render
 		//renIt(books);
-		console.log(books);
+		
+		//console.log(books);
 		
 	});
 
