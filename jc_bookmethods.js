@@ -197,13 +197,11 @@
 		
 
 		//pshIt(codeventure, books);
-			
-		
 		//books.logevent();
 		//render
 		//renIt(books);
 		
-		//console.log(books);
+		console.log(books);
 		
 	});
 
