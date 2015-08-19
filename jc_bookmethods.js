@@ -184,7 +184,7 @@
 		pshIt(themountains, pages);
 		pshIt(pages, books['Codeventure']);
 		pages.logevent = logevent;
-		//pages.logevent();
+		pages.logevent();
 		
 		//create choices
 		var theinn = new Choice('theinn', 'Go to the inn?');
@@ -193,7 +193,7 @@
 		pshIt(themountains, choices);
 		pshIt(choices, pages['home']);	
 		choices.logevent = logevent;
-		//choices.logevent();
+		choices.logevent();
 		
 
 		//pshIt(codeventure, books);
@@ -202,6 +202,5 @@
 		//renIt(books);
 		
 		console.log(books);
-		
 	});
 
