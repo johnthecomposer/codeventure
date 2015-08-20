@@ -1,10 +1,10 @@
-
 //literals
 	//collections
 	var books = {name: 'books'};
 	var pages = {name: 'pages'};
 	var choices = {name: 'choices'};
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //constructors (bookfactory prototypes)
 	var Book = function (title, author){
 		this.title = title,
@@ -17,91 +17,137 @@
 	}
 	
 	var Choice = function (target, description){
+		//set validation properties with literal values directly
+		this.datatype = 'string';
+		this.charlimit = 300;
 		this.target = target,
 		this.description = description
 		//assigning a unique identifier to a choice allows it to be used on more than one page
 			var UID = performance.now() + '_' + (Math.random() * 100);
 		this.id = this.target + '_' + UID;
 	}
-
-
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var sayhi = function(){alert('hi')};	
 //accessors
 	//setters
-	Choice.prototype.setTarget = function(book, target){
-		var error = 'Error: ';
-		//validate
-			if(!book['pages'][target]){
-				error += 'this page doesn\'t exist';
+			//book setters
+			var setTitle = function(title){
+				this.title = title;
 			}
-			else{
-				this.target = target;
+			var setAuthor = function(author){
+				this.author = author;
+			}
+			
+			//page setters
+			var setName = function(name){
+				this.name = name;
+			}
+			var setNarrative = function(narrative){
+				this.narrative = narrative;
 			}
 
-		//render
-			//call renderer
-		//persist
-			//call persistor?
-	}
+			//choice setters
+			var setTarget = function(book, target){
+				var error = 'Error: ';
+				//validate
+					if(!book['pages'][target]){
+						error += 'this page doesn\'t exist';
+					}
+					else{
+						this.target = target;
+					}
+				//render
+				//persist
+			}
 
-	Choice.prototype.datatype = 'string';
-	Choice.prototype.charlimit = 300;
-	
-	Choice.prototype.setDescription = function(description){
-		var error = 'Error: ';
-		if(typeof description !== this.datatype || description.length > this.charlimit){
-				error += 'please enter a valid string of less than ' + this.charlimit + 'characters';				
+			var setDescription = function(description){
+				var error = 'Error: ';
+				if(typeof description !== this.datatype || description.length > this.charlimit){
+						error += 'please enter a valid string of less than ' + this.charlimit + 'characters';				
+				}
+				else{
+					this.description = description;
+				}
+			}
+			
+		//add setters to prototypes
+		var addSetters = function(){
+			if(!this.setters){
+				this.setters = [];
+			}
+			for(var i = 0; i < arguments.length; i++){
+
+				this.setters.push(arguments[i]);
+				this.setters[i] = arguments[i];
+			}
 		}
-		else{
-			this.description = description;
-		}	
-	}
 
+
+	Book.prototype.addSetters = addSetters;
+	Page.prototype.addSetters = addSetters;	
+	Choice.prototype.addSetters = addSetters;
+	
+	Book.prototype.addSetters(setTitle, setAuthor);	
+	Page.prototype.addSetters(setName, setNarrative);
+	Choice.prototype.addSetters(setTarget, setDescription);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//getters
-	Choice.prototype.getInfo = function(){
-	}
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//destroyers
 	Choice.prototype.destroyMe = function(){
 		//find and delete all references to the object and the object itself
 		//return 'deleted' + ' ' + this.description
 	}
 	
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //rendering
 	//define containers
-		var infoContainers = ['.info'];
-		var userForms = [$('#choicesform'), $('#pageform')];
-
-		
+	var infoContainers = ['.info'];
+	var userForms = [$('#choicesform'), $('#pageform')];
+	
+	//render
 	var renIt = function(content){
-	//info containers
-		for(container in infoContainers){
-			$('<div>' + content + '</div>').attr('class', 'info').appendTo($(infoContainers[container]));
+		var tag = 'div';
+		if(typeof content === 'object'){
+			// Indent with tabs
+			content = JSON.stringify(content, null, '\t');
+			tag = 'pre';
+			var opn = '<>';
+			var cls = '</>';
+			var opn_tag = insertAfter(opn, '<', tag, 1);
+			var cls_tag = insertAfter(cls, '</', tag, 1);
+		}
+		else{
 		}
 
-	//userforms
+		//render in info containers
+			for(container in infoContainers){
+				$(opn_tag + content + cls_tag).attr('class', 'info').appendTo($(infoContainers[container]));
+			}
+		//render in userforms
+			
 	}
 
 //persistence
-	//add object to parent object with custom property name
-		//if this object has an id property, use it
-		//if not, use name
-		//else, use title
+	
+	//add object to parent object with custom property name; if this object has an id property, use it
+		//if not, use name; else, use title
 
 	var pshIt = function(obj, p_obj){
-		if(obj.id){
+		//alert(obj['name']);
+		if(obj.hasOwnProperty('id') && obj.id){
 			var prp = obj.id;
 		}
-		else if(obj.name){
-			var prp = obj.name;
-		}
-		else{
+		else if(obj.hasOwnProperty('title') && obj.title){
 			var prp = obj.title;
 		}
+		else{
+			var prp = obj.name;
+		}
 		p_obj[prp] = obj;
-	} 
-
+	}
 	//save to local storage
 
 
@@ -125,8 +171,10 @@
 		this.listeners[i](this);
 	  }
 	}
-	
 
+	//make properties private and only allow changes through setters
+		
+	
 	//create eventlog	
 	var logevent = function(){
 		if(!this.eventlog){
@@ -136,6 +184,7 @@
 				var thisevent = this[prp];
 				if(typeof thisevent !== 'function' && typeof thisevent !== 'object' && prp !== 'eventlog'){
 					if(!this.eventlog[prp]){
+						
 						this.eventlog[prp] = [];
 					}
 				var lastindex = this.eventlog[prp].length - 1;
@@ -145,7 +194,7 @@
 					changed ? this.eventlog[prp].push(thisevent) : '';
 				}
 			}
-		alert(changed);
+		//console.log(changed);
 	}
 
 
@@ -155,52 +204,87 @@
 	//Book.prototype.addListeners = addListners;
 	//Page.prototype.addListeners = addListeners;
 	//Choice.prototype.addListeners = addListeners;
-	
 
 	Book.prototype.logevent = logevent;
 	Page.prototype.logevent = logevent;
 	Choice.prototype.logevent = logevent;
 	
+
+
+
 //calls
 	$(document).ready(function(){
 
 		//create a book
-		var codeventure = new Book('Codeventure', 'John');
-
-		codeventure.logevent();
+		var codeventure = new Book('codeventure', 'John');
+			codeventure.logevent();
+		
 		codeventure.author = 'Johnz';
-		codeventure.logevent();
-		codeventure.author = 'Cody';		
-		codeventure.logevent();
+			codeventure.logevent();
+		codeventure.author = 'Cody';
+			codeventure.logevent();
+		
 		pshIt(codeventure, books);
+			codeventure.logevent();
+			
+			codeventure.test = 'test';
+			codeventure.logevent();
+
 
 		
 		//create pages
 		var home = new Page('home', 'This is the starting place.');
-		var theinn = new Page('the inn', 'The inn is nice.');
-		var themountains = new Page('the inn', 'Go to the mountains?');
+		var inn = new Page('inn', 'The inn is nice.');
+		var mountains = new Page('mountains', 'Go to the mountains?');
+
+		
 		pshIt(home, pages);
-		pshIt(theinn, pages);
-		pshIt(themountains, pages);
-		pshIt(pages, books['Codeventure']);
-		pages.logevent = logevent;
-		pages.logevent();
+			home.logevent();
+		pshIt(inn, pages);
+			inn.logevent();
+		pshIt(mountains, pages);
+			mountains.logevent();
+
+
+		//console.log(pages);		
+		console.log(books);
+			
+			
+
+		//pshIt(pages, codeventure);
+		//	codeventure.logevent();
+		
 		
 		//create choices
+
 		var theinn = new Choice('theinn', 'Go to the inn?');
+			//choices.logevent();
+
 		var themountains = new Choice('mountains', 'Go to the mountains?');
+			//choices.logevent();
+			
+			
 		pshIt(theinn, choices);
+			//choices.logevent();
 		pshIt(themountains, choices);
+			//choices.logevent();
+		
+		
+		
 		pshIt(choices, pages['home']);	
-		choices.logevent = logevent;
-		choices.logevent();
+			//pages['home'].logevent();
+		pshIt(pages, books['codeventure']);
+			//codeventure.logevent();	
+		pshIt(codeventure, books);
+			
 		
 
-		//pshIt(codeventure, books);
-		//books.logevent();
-		//render
-		//renIt(books);
+
 		
-		console.log(books);
+		//console.log(books);		
+
+
+		//render
+		renIt(books);
 	});
 
