@@ -1,23 +1,53 @@
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//jcjs pending categorization
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function listen_tree(obj){
+	if(!obj){obj = books}
+
+   	for(var property in obj){
+   		if(typeof obj[property] !== "function" && typeof obj[property] !== "array" && typeof obj[property] == "object" && property.indexOf('_e_log') === -1){
+			listen_tree(obj[property]);
+		}
+		else if(typeof obj[property] !== "function" &&  typeof obj[property] !== "object"){
+			if(!obj[property + '_e_log']){
+				obj[property + '_e_log'] = [];
+			}
+			var log = obj[property + '_e_log'];
+			var val = obj[property];
+				while(val !== log[log.length -1]){
+					//console.log('Called ' + arguments.callee.caller.toString().slice(9, arguments.callee.caller.toString().indexOf('(')) + 
+					//	'; changed ' + property + ' from ' + log[log.length -1] + ' to ' + val);
+					log.push(val);
+				break;
+				}
+		}
+		else{
+		//DO NOTHING; we've looped through all properties with values
+		}
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //literals
 	//collections
 	var books = {name: 'books'};
 	var pages = {name: 'pages'};
 	var choices = {name: 'choices'};
-	
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//jcjs pending categorization
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //constructors (bookfactory prototypes)
 	function Book(title, author){
 		this.title = title,
 		this.author = author
+		listen_tree(books);
+		listen_tree(this);		
 	}
 
-	function Page(name, narrative){
+	function Page(name, narrative, image){
 		this.name = name,
-		this.narrative = narrative
+		this.narrative = narrative,
+		this.narrative = image
+		listen_tree(pages);
+		listen_tree(this);
 	}
 	
 	function Choice(target, description){
@@ -30,6 +60,8 @@
 		//assigning a unique identifier to a choice allows it to be used on more than one page
 			var UID = performance.now() + '_' + (Math.random() * 100);
 		this.id = this.target + '_' + UID;
+		listen_tree(this);
+		//q_design: add third parameter 'page'?
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //accessors
@@ -37,19 +69,27 @@
 			//book setters
 			function setTitle(title){
 				this.title = title;
+				//listen_tree(this);
 			}
 			function setAuthor(author){
 				this.author = author;
+				listen_tree(this);
 			}
 			
 			//page setters
 			function setName(name){
 				this.name = name;
+				listen_tree(this);
 			}
 			function setNarrative(narrative){
 				this.narrative = narrative;
+				listen_tree(this);
 			}
-
+			function setNarrative(image){
+				this.narrative = image;
+				listen_tree(this);
+			}
+			
 			//choice setters
 			function setTarget(book, target){
 				var error = 'Error: ';
@@ -60,6 +100,7 @@
 					else{
 						this.target = target;
 					}
+				listen_tree(this);
 			}
 			function setDescription(description){
 				var error = 'Error: ';
@@ -69,6 +110,7 @@
 				else{
 					this.description = description;
 				}
+				listen_tree(this);
 			}
 
 		//function for adding setters to prototypes
@@ -84,29 +126,10 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //listeners for all functions
-		//create eventlog	
-		function logevent(){
-			if(!this.eventlog){
-				this.eventlog = [];
-			}
-				for(prp in this){
-					var thisevent = this[prp];
-					if(typeof thisevent !== 'function' && typeof thisevent !== 'object' && prp !== 'eventlog'){
-						if(!this.eventlog[prp]){
-							this.eventlog[prp] = [];
-						}
-					var lastindex = this.eventlog[prp].length - 1;
-					var lastevent = this.eventlog[prp][lastindex];				
-					var changed = '';
-					changed += thisevent == lastevent ? '' : 'changed ' + prp + ' from ' + lastevent + ' to ' + thisevent + '\n';
-						changed ? this.eventlog[prp].push(thisevent) : '';
-					}
-				}
-			//if changed, do stuff
-		};
-
+/*
 	//invoke listeners
 	function listenup(){
+
 	  for(var i = 0; i < this.listeners.length; i++){
 		this.listeners[i](this);
 	  }
@@ -126,13 +149,11 @@
 			//arguments[listener].logevent = logevent;
 			this.listeners.push(arguments[listener]);
 		}
-		//this.listenup = listenup;
-		this.logevent = logevent;
 	}
 	
-
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+
 //extend bookfactory prototypes
 	//setters
 	Book.prototype.addSetters = addSetters;
@@ -144,6 +165,7 @@
 	Choice.prototype.addSetters(setTarget, setDescription);
 
 	//listeners
+	/*
 	Book.prototype.addListeners = addListeners;
 	Page.prototype.addListeners = addListeners;
 	Choice.prototype.addListeners = addListeners;
@@ -151,7 +173,7 @@
 	Book.prototype.addListeners(logevent);
 	Page.prototype.addListeners(logevent);
 	Choice.prototype.addListeners(logevent);
-	
+	*/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//getters
 
@@ -170,7 +192,6 @@
 		//if not, use name; else, use title
 
 	function pshIt(obj, p_obj){
-		//alert(obj['name']);
 		if(obj.hasOwnProperty('id') && obj.id){
 			var prp = obj.id;
 		}
@@ -204,27 +225,112 @@
 		}
 		else{
 		}
-
 		//render in info containers
 			for(container in infoContainers){
 				$(opn_tag + content + cls_tag).attr('class', 'info').appendTo($(infoContainers[container]));
 			}
 		//render in userforms	
 	}
+/* ---------------------------------------------------- */
+var createList = function(sourceobj, destID, parentType, instructionTxt, defaultValue, itemClasses, fromSelected){
+
+    var fetched = this.fetchObj(sourceobj);	
+    var headerType = '';
+    var rowType = '';
+	var row;
+	var type;
+    var childType = '';
+	//q_design: does it make sense to attach UIDs to IDs of DOM elements to avoid collisions in the namespace?
+	var parentID = sourceobj + parentType;
+		//+ createStringUID();
+
+    var isSelected = '';
+    var defaultSelected = '';    
+
+    switch(parentType){
+        case 'ul':
+            childType = 'li';
+            break;
+        case 'select': 
+            childType = 'option';
+            break;
+        case 'table':
+            headerType = 'th';
+            childType = 'tr';
+            grandchildType = 'td';
+            break;
+		case 'form':
+			childType = 'input';
+			break;
+    }
+
+	var list = $('<' + parentType + '></' + parentType + '>').attr('id', parentID).attr('title', instructionTxt);
+	var itemcount = 1;
+	
+		for(prp in this[fetched]){
+
+			if(typeof this[prp] !== 'function'){
+
+				if(childType === 'input'){
+					if(this[fetched][prp].length > 50){
+						childType = 'textarea';
+					}
+				}			
+
+				var item = $('<' + childType + '></' + childType + '>');
+
+				//apply to all childTypes for all parentTypes
+				item.attr('id', childType === 'tr' ? itemcount : prp)
+				item.attr('class', itemClasses);			
+							
+				if(childType === 'tr'){
+					for(g_prp in this[fetched][fromSelected]){
+					console.log(g_prp + ': ' + this[fetched][fromSelected][g_prp]);
+						if(typeof this[fetched][fromSelected][g_prp] === 'object'){
+							var td_count = 0;
+							for(gg_prp in this[fetched][fromSelected][g_prp]){
+								
+								$('<' + grandchildType + '>' + itemcount + '</' + grandchildType + '>').appendTo(item);
+								//$('<' + grandchildType + '></' + grandchildType + '>').attr('id', prp).attr('value', this[fetched][prp][g_prp][gg_prp]).appendTo($(item));
+							td_count++
+							}
+						}
+					}
+				}
+							
+				if(childType === 'option' || childType === 'input'){
+					item.attr('value', this[fetched][prp].title);
+					item.attr('placeholder', this[fetched][prp].title);
+					item.attr('type', 'text');
+
+					if(prp === defaultValue){
+						item.attr('selected', 'selected');
+					}
+				}
+
+			$('<span>' + this[fetched][prp].title + '</span>').appendTo($(item));
+			$(item).appendTo(list);
+			itemcount++
+			}
+		
+		}
+	$(list).appendTo($(destID));
+	//$(list).appendTo(destID);
+}
+
+/* ---------------------------------------------------- */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //calls
 	$(document).ready(function(){
+
 		//create a book
 		var codeventure = new Book('codeventure', 'John');
-			//codeventure.logevent();
-		
-		codeventure.author = 'Johnz';
-			//codeventure.logevent();
-		codeventure.setAuthor('Cody');
-			//codeventure.logevent();
-		
+
+		codeventure.setTitle('Dukeybook');
+		codeventure.setTitle('Codeventure');
+		codeventure.setAuthor('Atreu');
+		codeventure.setAuthor('Jehosaphat');
 		pshIt(codeventure, books);
-			//codeventure.logevent();
 			
 
 		//create pages
@@ -232,46 +338,31 @@
 		var inn = new Page('inn', 'The inn is nice.');
 		var mountains = new Page('mountains', 'Go to the mountains?');
 	
+	
 		pshIt(home, pages);
-			//home.logevent();
 		pshIt(inn, pages);
-			//inn.logevent();
 		pshIt(mountains, pages);
-			//mountains.logevent();
 
-
-		pshIt(pages, codeventure);
-			//codeventure.logevent();
+			pshIt(pages, codeventure);
 		
 		
 		//create choices
 		var theinn = new Choice('theinn', 'Go to the inn?');
-			//choices.logevent();
-
 		var themountains = new Choice('mountains', 'Go to the mountains?');
-			//choices.logevent();
-			
-			
+
 		pshIt(theinn, choices);
-			//choices.logevent();
 		pshIt(themountains, choices);
-			//choices.logevent();
-		
-/*		
-		
-		pshIt(choices, pages['home']);	
-			//pages['home'].logevent();
-		pshIt(pages, books['codeventure']);
-			//codeventure.logevent();	
-		pshIt(codeventure, books);
-			
 		
 
-*/
-		
-		console.log(books);		
+		pshIt(choices, pages['home']);	
+		pshIt(pages, books['Codeventure']);
+
+                    // function(sourceobj, destID, parentType, instructionTxt, defaultValue, classes)
+//books.codeventure.createList('pages', '#pageslist', 'ul', '', '', 'editable')
+//alert(books.Codeventure.author_e_log.length);
+//console.log(books);
 
 		//render
-		renIt(books);
+			//renIt(books);
 	});
 

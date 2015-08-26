@@ -1,6 +1,6 @@
 
 /* ---------------------------------------------------- */
-var createList = function(sourceobj, destID, parentType, instructionTxt, defaultValue, classes){
+var createListx = function(sourceobj, destID, parentType, instructionTxt, defaultValue, classes){
     //alert('creating dropdown with arguments'  +  '\n sourceobj: ' + sourceobj + '\n destID: ' + destID + '\n parentType: ' + parentType + '\n instructionTxt: ' + instructionTxt + '\n defaultValue: ' + defaultValue + '\n classes: ' + classes );
     
     var fetched = this.fetchObj(sourceobj);
@@ -295,7 +295,8 @@ startbook();
 			/* ---- Build the document ---- */
 
 			//create list of pages as <ul>
-				book.createList('pages', '#pageslist', 'ul', '', '', 'editable')
+				book.createList('pages', '#pageslist', 'ul', 'click a page to display/edit details', '', 'editable')
+				
 			
 			//get page onclick and display it in form fields 
 				var getPage = function(elem){
@@ -304,12 +305,15 @@ startbook();
 					var selectedPage = $(elem).attr('id');
 					var pagename = $(elem).attr('id');
 
-						$("#title").val(book['pages'][selectedPage].title);
-						$("#narrative").val(book['pages'][selectedPage].narrative);
-						$("#image").val(book['pages'][selectedPage].image);
+					
+						//$("#title").val(book['pages'][selectedPage].title);
+						//$("#narrative").val(book['pages'][selectedPage].narrative);
+						//$("#image").val(book['pages'][selectedPage].image);
 						$("#pageform").show();
 					
 					book.selectedPage = selectedPage;
+			
+			book.createList('pages', '#pageform', 'table', 'click a page to display/edit details', '', 'editable', pagename)	
 			
 			$("#pagewrapper").show();
 			
@@ -322,7 +326,7 @@ startbook();
 			//onclick of <li> element, show page fields and populate page fields for clicked page from fetched book object
 				$("li").click(function(){
 				 getPage(this);
-				 init();
+				 //init();
 				 //alert(this.id);
 				});
 				
@@ -372,12 +376,12 @@ startbook();
 					assignMethods(book['pages']);
 
 			//create list of pages as <ul>
-				book.createList('pages', '#pageslist', 'ul', '', '', 'editable');
+				//book.createList('pages', '#pageslist', 'ul', '', '', 'editable');
 					
 			//onclick of <li> element, show page fields and populate page fields for clicked page from fetched book object
 				$("li").click(function(){
 				 getPage(this);
-				 init();
+				 //init();
 				 //alert(this.id); 
 				});
 				//alert('saving');
@@ -487,7 +491,7 @@ startbook();
 
 							book.selectedPage = "newPage";
 							$("#pageform").show();
-							init();
+							//init();
 							book.choicesFactory(0);
 						});
 				
@@ -499,13 +503,10 @@ startbook();
 
 			  
 
-
-
-
-
-
 			//Source:  http://stackoverflow.com/questions/454202/creating-a-textarea-with-auto-resize 
 			//Resize auto-resize textarea
+			
+			/*
 			var observe;
 			if (window.attachEvent) {
 				observe = function (element, event, handler) {
@@ -538,7 +539,7 @@ startbook();
 				resize();
 			}    
 			init();
-		
+			*/
 
 	}
 
