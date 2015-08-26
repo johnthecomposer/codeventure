@@ -153,58 +153,6 @@ function listen_tree(obj){
 	
 */
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
-
-//extend bookfactory prototypes
-	//setters
-	Book.prototype.addSetters = addSetters;
-	Page.prototype.addSetters = addSetters;	
-	Choice.prototype.addSetters = addSetters;
-	
-	Book.prototype.addSetters(setTitle, setAuthor);	
-	Page.prototype.addSetters(setName, setNarrative);
-	Choice.prototype.addSetters(setTarget, setDescription);
-
-	//listeners
-	/*
-	Book.prototype.addListeners = addListeners;
-	Page.prototype.addListeners = addListeners;
-	Choice.prototype.addListeners = addListeners;
-
-	Book.prototype.addListeners(logevent);
-	Page.prototype.addListeners(logevent);
-	Choice.prototype.addListeners(logevent);
-	*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//getters
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//destroyers
-	Choice.prototype.destroyMe = function(){
-		//find and delete all references to the object and the object itself
-		//return 'deleted' + ' ' + this.description
-	}
-	
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//persistence
-	
-	//add object to parent object with custom property name; if this object has an id property, use it
-		//if not, use name; else, use title
-
-	function pshIt(obj, p_obj){
-		if(obj.hasOwnProperty('id') && obj.id){
-			var prp = obj.id;
-		}
-		else if(obj.hasOwnProperty('title') && obj.title){
-			var prp = obj.title;
-		}
-		else{
-			var prp = obj.name;
-		}
-		p_obj[prp] = obj;
-	}
-	//save to local storage
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //rendering
 	//define containers
@@ -242,10 +190,8 @@ var createList = function(sourceobj, destID, parentType, instructionTxt, default
     var childType = '';
 	//q_design: does it make sense to attach UIDs to IDs of DOM elements to avoid collisions in the namespace?
 	var parentID = sourceobj + parentType;
-		//+ createStringUID();
-
-    var isSelected = '';
-    var defaultSelected = '';    
+		//+ createStringUID(); 
+	var displayVal = '';
 
     switch(parentType){
         case 'ul':
@@ -278,20 +224,27 @@ var createList = function(sourceobj, destID, parentType, instructionTxt, default
 				}			
 
 				var item = $('<' + childType + '></' + childType + '>');
-
+				var displayVal = this[fetched][prp].title || this[fetched][prp].name ;
+				
 				//apply to all childTypes for all parentTypes
 				item.attr('id', childType === 'tr' ? itemcount : prp)
 				item.attr('class', itemClasses);			
+				
 							
 				if(childType === 'tr'){
+				
 					for(g_prp in this[fetched][fromSelected]){
-					console.log(g_prp + ': ' + this[fetched][fromSelected][g_prp]);
+
 						if(typeof this[fetched][fromSelected][g_prp] === 'object'){
+
 							var td_count = 0;
+
 							for(gg_prp in this[fetched][fromSelected][g_prp]){
-								
+							displayVal = this[fetched][fromSelected][g_prp][gg_prp] ;
+								console.log(gg_prp);
 								$('<' + grandchildType + '>' + itemcount + '</' + grandchildType + '>').appendTo(item);
-								//$('<' + grandchildType + '></' + grandchildType + '>').attr('id', prp).attr('value', this[fetched][prp][g_prp][gg_prp]).appendTo($(item));
+								$('<' + grandchildType + '>' + gg_prp + '</' + grandchildType + '>').appendTo(item);
+								$('<' + grandchildType + '>' + displayVal + '</' + grandchildType + '>').attr('id', gg_prp).appendTo($(item));
 							td_count++
 							}
 						}
@@ -299,17 +252,31 @@ var createList = function(sourceobj, destID, parentType, instructionTxt, default
 				}
 							
 				if(childType === 'option' || childType === 'input'){
+				
 					item.attr('value', this[fetched][prp].title);
-					item.attr('placeholder', this[fetched][prp].title);
-					item.attr('type', 'text');
-
+					
 					if(prp === defaultValue){
 						item.attr('selected', 'selected');
 					}
 				}
+				
+				if(childType === 'input'){
+					item.attr('placeholder', this[fetched][prp].title);
+					item.attr('type', 'text');
+					
+				}
+				if(childType === 'li'){
+					$('<span>' + displayVal + '</span>').appendTo($(item));
+				}
+				
 
-			$('<span>' + this[fetched][prp].title + '</span>').appendTo($(item));
+						
 			$(item).appendTo(list);
+			
+			if(parentType === 'table'){
+				break;
+			}
+
 			itemcount++
 			}
 		
@@ -319,6 +286,78 @@ var createList = function(sourceobj, destID, parentType, instructionTxt, default
 }
 
 /* ---------------------------------------------------- */
+
+		//function for adding renderers to prototypes
+			//takes function names as arguments
+		function addRenderers(){
+			for(var i = 0; i < arguments.length; i++){
+				//add methods passed as arguments to this
+				arguments[i].function_class = 'renderer';
+				this[arguments[i].name] = arguments[i];
+			}
+		}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+
+//extend bookfactory prototypes
+	//setters
+	Book.prototype.addSetters = addSetters;
+	Page.prototype.addSetters = addSetters;	
+	Choice.prototype.addSetters = addSetters;
+	
+	Book.prototype.addSetters(setTitle, setAuthor);	
+	Page.prototype.addSetters(setName, setNarrative);
+	Choice.prototype.addSetters(setTarget, setDescription);
+
+	//listeners
+	/*
+	Book.prototype.addListeners = addListeners;
+	Page.prototype.addListeners = addListeners;
+	Choice.prototype.addListeners = addListeners;
+
+	Book.prototype.addListeners(logevent);
+	Page.prototype.addListeners(logevent);
+	Choice.prototype.addListeners(logevent);
+	*/
+	
+	//renderers
+	Book.prototype.addRenderers = addRenderers;
+	Page.prototype.addRenderers = addRenderers;	
+	Choice.prototype.addRenderers = addRenderers;
+	
+	Book.prototype.addRenderers(createList);	
+	Page.prototype.addRenderers(createList);
+	Choice.prototype.addRenderers(createList);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//getters
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//destroyers
+	Choice.prototype.destroyMe = function(){
+		//find and delete all references to the object and the object itself
+		//return 'deleted' + ' ' + this.description
+	}
+	
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//persistence
+	
+	//add object to parent object with custom property name; if this object has an id property, use it
+		//if not, use name; else, use title
+
+	function pshIt(obj, p_obj){
+		if(obj.hasOwnProperty('id') && obj.id){
+			var prp = obj.id;
+		}
+		else if(obj.hasOwnProperty('title') && obj.title){
+			var prp = obj.title;
+		}
+		else{
+			var prp = obj.name;
+		}
+		p_obj[prp] = obj;
+	}
+	//save to local storage
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //calls
 	$(document).ready(function(){
@@ -357,12 +396,6 @@ var createList = function(sourceobj, destID, parentType, instructionTxt, default
 		pshIt(choices, pages['home']);	
 		pshIt(pages, books['Codeventure']);
 
-                    // function(sourceobj, destID, parentType, instructionTxt, defaultValue, classes)
-//books.codeventure.createList('pages', '#pageslist', 'ul', '', '', 'editable')
-//alert(books.Codeventure.author_e_log.length);
-//console.log(books);
-
-		//render
-			//renIt(books);
+		//console.log(books);
 	});
 
