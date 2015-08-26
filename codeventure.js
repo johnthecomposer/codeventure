@@ -283,7 +283,6 @@ startbook();
 			//assign methods to the object after it is fetched because storing functions in local storage is not recommended     
 			var assignMethods = function(obj){
 				obj.countProps = countProps;
-				obj.fetchObj = fetchObj;
 				obj.addRow = addRow;
 				obj.choicesFactory = choicesFactory;
 				obj.createList = createList; 
@@ -295,38 +294,35 @@ startbook();
 			/* ---- Build the document ---- */
 
 			//create list of pages as <ul>
-				book.createList('pages', '#pageslist', 'ul', 'click a page to display/edit details', '', 'editable')
+			book.createList('pages', '#pageslist', 'ul', 'click a page to display/edit details', '', 'editable')
 				
-			
 			//get page onclick and display it in form fields 
-				var getPage = function(elem){
-					//alert(elem.id + ' page clicked');
-					$("#temptext").html('val/id: ' + $(elem).attr('id') + '<br>text: ' + $(elem).text() + '<br>index: ' + $(elem).index());
-					var selectedPage = $(elem).attr('id');
-					var pagename = $(elem).attr('id');
+			var getPage = function(elem){
+				var selectedPage = $(elem).attr('id');
+				book.selectedPage = selectedPage;			
+				//$("#temptext").html('val/id: ' + $(elem).attr('id') + '<br>text: ' + $(elem).text() + '<br>index: ' + $(elem).index());
 
-					
-						//$("#title").val(book['pages'][selectedPage].title);
-						//$("#narrative").val(book['pages'][selectedPage].narrative);
-						//$("#image").val(book['pages'][selectedPage].image);
-						$("#pageform").show();
-					
-					book.selectedPage = selectedPage;
+			//page
+			book['pages'].createList(selectedPage, '#pageform', 'form', 'edit choices for this page', '');
+			$("#pageform").show();
 			
-			book.createList('pages', '#pageform', 'table', 'click a page to display/edit details', '', 'editable', pagename)	
 			
-			$("#pagewrapper").show();
+			//choices
+			book['pages'].createList(selectedPage, '#choicesform', 'table', 'click a page to display/edit details', '', 'editable', 'choices');
+			$("#choiceswrapper").show();
+			$("#choicesform").show();
+			//$("#pagewrapper").show();
 			
 			
 			//fetch choices on this page  
 					//alert('found page, about to call choicesFactory');
-					book.choicesFactory(0);
-				}
+					//book.choicesFactory(0);
+			}
 				
 			//onclick of <li> element, show page fields and populate page fields for clicked page from fetched book object
 				$("li").click(function(){
 				 getPage(this);
-				 //init();
+				 init();
 				 //alert(this.id);
 				});
 				

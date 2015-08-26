@@ -180,109 +180,106 @@ function listen_tree(obj){
 		//render in userforms	
 	}
 /* ---------------------------------------------------- */
-var createList = function(sourceobj, destID, parentType, instructionTxt, defaultValue, itemClasses, fromSelected){
+var createList = function(sourceobj, destID, parentType, instructionTxt, defaultValue, itemClasses, subObj){
 
-    var fetched = this.fetchObj(sourceobj);	
+	var obj = (subObj && sourceobj) ? this[sourceobj][subObj] :  
+			  sourceobj ? this[sourceobj] : 
+			  this;
     var headerType = '';
-    var rowType = '';
-	var row;
-	var type;
     var childType = '';
 	//q_design: does it make sense to attach UIDs to IDs of DOM elements to avoid collisions in the namespace?
-	var parentID = sourceobj + parentType;
-		//+ createStringUID(); 
-	var displayVal = '';
-
-    switch(parentType){
-        case 'ul':
-            childType = 'li';
-            break;
-        case 'select': 
-            childType = 'option';
-            break;
-        case 'table':
-            headerType = 'th';
-            childType = 'tr';
-            grandchildType = 'td';
-            break;
-		case 'form':
-			childType = 'input';
-			break;
-    }
-
+	var parentID = sourceobj + '_' + (subObj ? subObj + '_' : '' ) + parentType; //+ createStringUID();
+	var item = '';
 	var list = $('<' + parentType + '></' + parentType + '>').attr('id', parentID).attr('title', instructionTxt);
 	var itemcount = 1;
 	
-		for(prp in this[fetched]){
+		for(prp in obj){
+			
+			if(typeof obj[prp] !== 'function'){		
+			
+				//var displayVal = obj[prp].title ? obj[prp].title : obj[prp].name;
+				var displayVal = obj[prp].title || obj[prp].name;
 
-			if(typeof this[prp] !== 'function'){
-
-				if(childType === 'input'){
-					if(this[fetched][prp].length > 50){
+				//apply to all childTypes for all parentTypes
+				function createItem(){
+					item = $('<' + childType + '></' + childType + '>');
+					item.attr('id', childType === 'tr' ? itemcount : prp)
+					item.attr('class', itemClasses);
+				}
+				
+				if(parentType === 'table'){
+					headerType = 'th';
+					childType = 'tr';
+					grandchildType = 'td';
+					createItem();
+					displayVal = obj[prp];
+					//if(itemClasses.indexOf('editable') !== -1){
+						//if(){ = obj[prp];}
+					//}
+					if($(list).find('th').length === 0){
+						var row_header = $('<' + childType + '><' + 
+								headerType + '>#</' + headerType + '><' + 
+								headerType + '>target</' + headerType + '><' + 
+								headerType + '>text</' + headerType + '></' + 
+							childType + '>');
+					row_header.appendTo(list);
+					}
+			
+					var col_counter = $('<' + grandchildType + '>' + itemcount + '</' + grandchildType + '>');
+					var col_target = $('<' + grandchildType + '>' + prp + '</' + grandchildType + '>');
+					var col_text = $('<' + grandchildType + '>' + displayVal + '</' + grandchildType + '>').attr('id', prp);
+						
+					$(item).append(col_counter, col_target, col_text);	
+				}
+				
+				else if(parentType === 'select'){
+					childType = 'option';
+					createItem();
+					
+					item.attr('value', obj[prp].title);
+						if(prp === defaultValue){
+							item.attr('selected', 'selected');
+						}
+					item.attr('placeholder', obj[prp].title);
+					item.attr('type', 'text');
+				}
+				
+				else if(parentType === 'form' && typeof obj[prp] !== 'object'){
+					console.log(obj[prp]);
+					if(obj[prp].length > 50){
 						childType = 'textarea';
 					}
-				}			
-
-				var item = $('<' + childType + '></' + childType + '>');
-				var displayVal = this[fetched][prp].title || this[fetched][prp].name ;
-				
-				//apply to all childTypes for all parentTypes
-				item.attr('id', childType === 'tr' ? itemcount : prp)
-				item.attr('class', itemClasses);			
-				
-							
-				if(childType === 'tr'){
-				
-					for(g_prp in this[fetched][fromSelected]){
-
-						if(typeof this[fetched][fromSelected][g_prp] === 'object'){
-
-							var td_count = 0;
-
-							for(gg_prp in this[fetched][fromSelected][g_prp]){
-							displayVal = this[fetched][fromSelected][g_prp][gg_prp] ;
-								console.log(gg_prp);
-								$('<' + grandchildType + '>' + itemcount + '</' + grandchildType + '>').appendTo(item);
-								$('<' + grandchildType + '>' + gg_prp + '</' + grandchildType + '>').appendTo(item);
-								$('<' + grandchildType + '>' + displayVal + '</' + grandchildType + '>').attr('id', gg_prp).appendTo($(item));
-							td_count++
-							}
-						}
+					else{
+						childType = 'input';
 					}
-				}
-							
-				if(childType === 'option' || childType === 'input'){
-				
-					item.attr('value', this[fetched][prp].title);
-					
-					if(prp === defaultValue){
-						item.attr('selected', 'selected');
-					}
-				}
-				
-				if(childType === 'input'){
-					item.attr('placeholder', this[fetched][prp].title);
+					createItem();
+					item.attr('placeholder', obj[prp].title);
 					item.attr('type', 'text');
-					
+					item.attr('id', prp);
+					item.attr('value', obj[prp]);
+					//$('<' + childType + '>' + displayVal + '</' + childType + '>').attr('value', 'hi').appendTo($(item));
 				}
-				if(childType === 'li'){
+				
+				else if(parentType === 'ul'){
+					childType = 'li';
+					createItem();
+					item = $('<' + childType + '></' + childType + '>').attr('id', prp);
+					
+
 					$('<span>' + displayVal + '</span>').appendTo($(item));
 				}
 				
+				else{
+					alert('Error. Please choose a different element to create.');
+					break;
+				}
 
-						
+			//alert(childType);
 			$(item).appendTo(list);
-			
-			if(parentType === 'table'){
-				break;
-			}
-
 			itemcount++
 			}
-		
 		}
 	$(list).appendTo($(destID));
-	//$(list).appendTo(destID);
 }
 
 /* ---------------------------------------------------- */
